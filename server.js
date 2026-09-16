@@ -89,7 +89,7 @@ function sameOriginGuard(req) {
 // ---------------------------------------------------------------------------
 // Gemini call — free tier, walks a small model list, never throws to caller.
 // ---------------------------------------------------------------------------
-const MODELS = ["gemini-2.5-flash-lite", "gemini-2.5-flash"];
+const MODELS = ["gemini-3.6-flash", "gemini-2.5-flash", "gemini-2.5-flash-lite"];
 
 function callGemini(model, apiKey, payload) {
   return new Promise((resolve) => {
