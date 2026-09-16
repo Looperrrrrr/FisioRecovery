@@ -20,24 +20,18 @@
         nombre: "Lesiones deportivas",
         resumen: "Esguinces, tendinopatías y roturas fibrilares. Vuelve a competir con seguridad.",
         desde: "40€",
-        ovQuery: "sports injury physiotherapy treatment athlete",
-        icon: "run",
       },
       {
         id: "rehabilitacion",
         nombre: "Rehabilitación",
         resumen: "Postquirúrgica, traumatológica y neurológica. Planes de recuperación a medida.",
         desde: "40€",
-        ovQuery: "physical therapy rehabilitation exercise clinic",
-        icon: "rehab",
       },
       {
         id: "masaje",
         nombre: "Masaje terapéutico",
         resumen: "Descontracturante, deportivo y drenaje. Alivio real, no solo relax.",
         desde: "35€",
-        ovQuery: "therapeutic massage therapy back",
-        icon: "hands",
       },
     ],
 
@@ -84,13 +78,6 @@
         { minSesiones: 10, descuento: 0.15 },
         { minSesiones: 5, descuento: 0.08 },
       ],
-    },
-
-    ovImages: {
-      hero: { query: "physiotherapist treating patient knee", aspect: "wide" },
-      "clinica-interior": { query: "modern physiotherapy clinic interior", aspect: "wide" },
-      "equipo-fisio": { query: "physiotherapist portrait professional clinic", aspect: "tall" },
-      "paciente-ejercicio": { query: "patient stretching exercise physical therapy", aspect: null },
     },
   };
 })();

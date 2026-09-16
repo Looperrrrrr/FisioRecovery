@@ -9,7 +9,15 @@
 
   const API = "https://api.openverse.org/v1/images/";
   const LICENSES = "cc0,by,by-sa,pdm";
-  const CACHE_KEY = "ov_cache_v1";
+  const CACHE_KEY = "ov_cache_v2";
+  const RENDERABLE_RE = /\.(jpe?g|png|webp|gif)(\?|$)/i;
+
+  // Openverse leans heavily on Wikimedia Commons archives, where medical /
+  // physiotherapy search terms often match old military rehabilitation
+  // photos. Filter those out client-side since we can't preview results
+  // ourselves before they go live.
+  const IRRELEVANT_RE = /\b(soldier|military|army|navy|marine|war|veteran|troop|regiment|infantry|ww1|ww2|world war|combat|barracks)\b/i;
+  const PREFERRED_SOURCES = ["flickr", "stocksnap", "rawpixel", "pexels"];
 
   function readCache() {
     try {
@@ -24,24 +32,52 @@
     } catch (_) {}
   }
 
-  async function searchOne(query, aspect) {
-    const params = new URLSearchParams({
-      q: query,
-      license: LICENSES,
-      mature: "false",
-      page_size: "3",
+  function isRelevant(r) {
+    const text = ((r.title || "") + " " + (r.tags || []).map((t) => t.name || t).join(" ")).toLowerCase();
+    return !IRRELEVANT_RE.test(text);
+  }
+
+  function pickBest(results) {
+    const renderable = results.filter((r) => r.url && RENDERABLE_RE.test(r.url));
+    const relevant = renderable.filter(isRelevant);
+    const pool = relevant.length ? relevant : renderable; // relevance filter is best-effort, never block a real match entirely
+    if (!pool.length) return null;
+    const preferred = pool.find((r) => PREFERRED_SOURCES.includes((r.source || r.provider || "").toLowerCase()));
+    return preferred || pool[0];
+  }
+
+  async function fetchTier(params) {
+    const clean = new URLSearchParams();
+    Object.entries(params).forEach(([k, v]) => {
+      if (v) clean.set(k, v);
     });
-    if (aspect) params.set("aspect_ratio", aspect);
     try {
-      const res = await fetch(API + "?" + params.toString(), { headers: { Accept: "application/json" } });
-      if (!res.ok) return null;
+      const res = await fetch(API + "?" + clean.toString(), { headers: { Accept: "application/json" } });
+      if (!res.ok) return [];
       const data = await res.json();
-      const results = (data && data.results) || [];
-      const renderable = results.filter((r) => r.url && /\.(jpe?g|png|webp|gif)(\?|$)/i.test(r.url));
-      return renderable[0] || results[0] || null;
+      return (data && data.results) || [];
     } catch (_) {
-      return null;
+      return [];
     }
+  }
+
+  // Progressively relax filters until something relevant turns up — mirrors
+  // the build-time Python fetcher's fallback ladder (see
+  // scripts/openverse_fetch.py) since a single strict query often returns
+  // zero (or irrelevant) results.
+  async function searchOne(query, aspect) {
+    const tiers = [
+      { q: query, license: LICENSES, aspect_ratio: aspect, source: PREFERRED_SOURCES.join(","), mature: "false", page_size: "8" },
+      { q: query, license: LICENSES, aspect_ratio: aspect, mature: "false", page_size: "8" },
+      { q: query, license: LICENSES, mature: "false", page_size: "8" },
+      { q: query, mature: "false", page_size: "8" },
+    ];
+    for (const params of tiers) {
+      const results = await fetchTier(params);
+      const best = pickBest(results);
+      if (best) return best;
+    }
+    return null;
   }
 
   function creditFrom(result) {
