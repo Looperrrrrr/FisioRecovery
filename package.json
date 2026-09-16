@@ -1,0 +1,17 @@
+{
+  "name": "fisiorecovery-madrid",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Web de FisioRecovery Madrid — clínica de fisioterapia, con asistente Gemini y calculadora de presupuesto.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

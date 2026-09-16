@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Créditos fotográficos · FisioRecovery Madrid</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@700;800&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="styles.css?v=20260916">
+</head>
+<body class="page-credits">
+<div class="container">
+  <a class="back-link" href="index.html">← Volver a la web</a>
+  <main>
+    <h1 class="section-title">Créditos fotográficos</h1>
+    <p>Las imágenes de este sitio se cargan en directo desde <a href="https://openverse.org" target="_blank" rel="noopener">Openverse</a>, el buscador de imágenes con licencia Creative Commons de la Wikimedia Foundation. Esta página muestra la atribución de cada fotografía tal como la reporta la API en el momento de la visita.</p>
+    <ul class="credits-list" data-credits>
+      <li>Cargando atribuciones…</li>
+    </ul>
+  </main>
+</div>
+
+<!-- Hidden slots so openverse-runtime.js resolves the same photos used on the homepage -->
+<div hidden>
+  <div class="photo-frame" data-ov-query="physiotherapist treating patient knee" data-ov-aspect="wide" data-ov-id="hero"><img data-ov-img alt=""></div>
+  <div class="photo-frame" data-ov-query="sports injury physiotherapy treatment athlete" data-ov-id="deportivas"><img data-ov-img alt=""></div>
+  <div class="photo-frame" data-ov-query="physical therapy rehabilitation exercise clinic" data-ov-id="rehabilitacion"><img data-ov-img alt=""></div>
+  <div class="photo-frame" data-ov-query="therapeutic massage therapy back" data-ov-id="masaje"><img data-ov-img alt=""></div>
+</div>
+
+<script defer src="lib/openverse-runtime.js"></script>
+<script defer src="lib/credits-render.js"></script>
+</body>
+</html>
