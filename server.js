@@ -165,20 +165,28 @@ app.post("/api/asistente", async (req, res) => {
   };
 
   let reply = "";
+  let lastErr = "";
   for (const model of MODELS) {
     const { status, body } = await callGemini(model, key, payload);
     if (status >= 200 && status < 300 && body) {
       try {
         const data = JSON.parse(body);
         reply = (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0].text) || "";
-      } catch (_) {
-        reply = "";
+        if (!reply) {
+          const block = (data.promptFeedback && data.promptFeedback.blockReason) || (data.candidates && data.candidates[0] && data.candidates[0].finishReason) || "desconocido";
+          lastErr = `modelo ${model} respuesta vacía (${block})`;
+        }
+      } catch (e) {
+        lastErr = `modelo ${model} JSON inválido: ${e.message}`;
       }
+    } else {
+      lastErr = `modelo ${model} http ${status}: ${String(body).slice(0, 400)}`;
     }
     if (reply) break;
   }
 
   if (!reply) {
+    console.warn("[asistente]", lastErr);
     return res.json({
       reply: "Ahora mismo no puedo responder. Escríbenos por el formulario y te ayudamos enseguida.",
     });
